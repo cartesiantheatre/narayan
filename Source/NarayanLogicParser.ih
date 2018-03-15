@@ -1,0 +1,91 @@
+/*
+    Narayan™, a library for simulating artificial life in big cities.
+    Copyright (C) 2017-2018 Cartesian Theatre. All rights reserved.
+*/
+
+// Multiple include protection...
+#ifndef _NARAYAN_LOGIC_PARSER_IH_
+#define _NARAYAN_LOGIC_PARSER_IH_
+
+// Includes...
+
+    // Provided by Autoconf...
+    #include <config.h>
+
+    // Parser user class...
+    #include "NarayanLogicParser.h"
+
+    // Standard C++ / POSIX system headers...
+    #include <cmath>
+    #include <sstream>
+
+    // i18n...
+    #include "gettext.h"
+    #define _(str) gettext (str)
+    #define N_(str) gettext_noop (str)
+
+// Constructor expecting path to input file...
+NarayanLogicParser::NarayanLogicParser(const std::string &InputFile)
+    : d_scanner(InputFile, "")
+{
+    // Disable automatic printing of debug information in case %debug 
+    //  declaration was present in parser grammar...
+    setDebug(DebugMode__::OFF);
+}
+
+// Called whenever the parser encounters a syntax error...
+inline void NarayanLogicParser::error()
+{
+    // Prepend the input file name and offending line number into the exception
+    //  string...
+    std::stringstream ErrorMessage;
+    ErrorMessage 
+        << d_scanner.filename() << ":" 
+        << d_scanner.lineNr() << ": " 
+        << _("syntax error: ") 
+        << d_scanner.matched();
+
+    // Convert into a runtime error...
+    const std::runtime_error RuntimeException(ErrorMessage.str());
+    
+    // Propogate exception up...
+    throw RuntimeException;
+}
+
+// $insert lex
+inline int NarayanLogicParser::lex()
+{
+    return d_scanner.lex();
+}
+
+inline void NarayanLogicParser::print()         
+{
+    print__();           // displays tokens if --print was specified
+}
+
+// Semantic error raised an exception during a semantic action...
+inline void NarayanLogicParser::exceptionHandler(const std::exception &Exception)
+{
+    // Prepend the input file name and offending line number into the exception
+    //  string...
+    std::stringstream ErrorMessage;
+    ErrorMessage 
+        << d_scanner.filename() << ":"
+        << d_loc__.first_line << ": "
+        << Exception.what();
+
+    // Convert into a runtime error...
+    const std::runtime_error RuntimeException(ErrorMessage.str());
+    
+    // Propogate exception up...
+    throw RuntimeException;
+}
+
+/*
+    Add here includes that are only required for the compilation of
+    NarayanLogicParser's sources.
+*/
+
+// Multiple include protection...
+#endif
+

@@ -1,0 +1,361 @@
+/*
+    Narayan Designer, a modelling tool for the Narayan simulation engine.
+    Copyright (C) 2017-2018 Cartesian Theatre. All rights reserved.
+*/
+
+/*
+    Invocation: $ bisonc++ --show-filenames --thread-safe NarayanLogicParser.ypp
+
+    Generates:
+
+        Baseclass header:       NarayanLogicParserBase.h    (not modifiable, clobbered / generated repeatedly in $builddir)
+        Class header:           NarayanLogicParser.h        (user modifiable, preserved / generated once in $srcdir)
+        Implementation header:  NarayanLogicParser.ih       (user modifiable, preserved / generated once in $srcdir)
+        Parser implementation:  NarayanLogicParser.cpp      (not modifiable, clobbered / generated repeatedly in $builddir)
+*/
+
+// Bison declarations section contains declarations that define parser settings,
+//  terminal and nonterminal symbols, their precedence and associativity, and so
+//  forth...
+
+    // Where to find the lexer...
+    %scanner                    "NarayanLogicLexer.h"
+
+    // What to call our lexer when it is declared...
+    %scanner-class-name         NarayanLogicLexer
+
+    // Lexer's method to tokenize...
+    %scanner-token-function     d_scanner.lex()
+
+    // What to name the parser class which contains the lexer as a member...
+    %class-name                 NarayanLogicParser
+
+    // Terminal tokens with associativity which determines how repeated uses of
+    //  the given symbol nest, provided in order from lowest to highest
+    //  precedence...
+    %left                       RELATIONAL_AT_LEAST
+    %left                       RELATIONAL_AT_MOST
+    %left                       RELATIONAL_IS
+    %left                       '-' '+'
+    %left                       '*' '/'
+    %left                       '%'
+    %right                      '^'         /* Exponentiation operator */
+    %right                      UNARY       /* Positive or negation unary operator */
+
+    // Define the parser's base class header file containing the parser's
+    //  symbolic tokens...
+    %baseclass-header           NarayanLogicParserBase.h
+
+    // Define the name of source file containing the parser implementation...
+    %parsefun-source            NarayanLogicParser.cpp
+
+    // Define semantic value types using polymorphism instead of traditional
+    //  union interface. This was added in bisonc++(1) in 2007, whereas bison(1)
+    //  / POSIX yacc(1) were limited to type unsafe %union mechanism...
+    %polymorphic                STRING: std::string; NUMBER: float;
+
+    // Parser will verify that the polymorphic tag used when calling semantic
+    //  value's get() method matches the actual tag of the semantic value...
+    %tag-mismatches             on
+
+    // Set of all tokens (terminals) without associativity or precedence...
+    %token
+        AGENT_OPTIONS
+        APPLY_COUNT
+        CHAIN
+        CREATE_UNIT
+        DAY
+        EVENT_FAIL
+        EVENT_SUCCESS
+        EVENT_TYPE_ALERT
+        EVENT_TYPE_AUDIO
+        EVENT_TYPE_EFFECT
+        EXECUTE_RULE_ON_FAIL
+        HOUR
+        IDENTIFIER
+        IN
+        MAX_APPLY_COUNT
+        NEW_LINE
+        NUMBER
+        OPTION_COUNT
+        OPTION_ID
+        OPTION_OR
+        OPTION_REPEAT_AFTER
+        OPTION_SEND_TO
+        OPTION_SWITCH_TO
+        OPTION_USING
+        OPTION_VIA
+        OUT
+        PRIORITY
+        RANDOM
+        RATE
+        RULE_END
+        RULE_START_GLOBAL
+        RULE_START_MAP
+        RULE_START_UNIT
+        RULE_START_ZONE
+        SAMPLE
+        SCOPE_AGENT
+        SCOPE_CONNECTED
+        SCOPE_GLOBAL
+        SCOPE_LOCAL
+        SCOPE_MAP
+        TIME_TRIGGER
+
+    // For non-terminals whose semantic value can vary, select the underlying
+    //  storage type that makes them easiest to work with...
+    %type <STRING>              identifier
+    %type <NUMBER>              expression, number
+
+    // Set the starting symboling. After the Bison parser's bottom up algorithm
+    //  reduces each previous shift (push of a token or grouping to parser
+    //  stack), the final reduction should contain none other than the original
+    //  start symbol...
+    %start                      input
+
+    // Warn whenever the default action is used for a production rule missing
+    //  an explicit semantic...
+//    %default-actions            warn
+
+    // Add the standard location stack to the generated parser so we can track
+    //  locations...
+    %lsp-needed
+
+    // Increase the usefulness of error messages passed to the error reporting
+    //  function...
+    %error-verbose
+
+//%no-lines
+
+    // Generate debugging code for the parse() function, but toggle with
+    //  setDebug()...
+    %debug
+
+    // Ensure that each thread's polymorphic code is thread safe. All this
+    //  effectively does at this time is ensure the parser accesses its error
+    //  counter data member in a thread safe manner. Not available until version
+    //  6.00.00. In mean time, specify --thread-safe instead for same effect...
+    %thread-safe
+
+// Grammar rules section contains machine readable Backus-Naur form with
+//  intended actions (semantics) to perform...
+%%
+
+/*
+series:
+    unit
+  | series unit
+  ;
+*/
+
+input:
+    /* empty */
+  | input rule
+  | input NEW_LINE
+  ;
+
+agent_option:
+    OPTION_REPEAT_AFTER expression
+  | OPTION_SEND_TO identifier_dysjunction_list
+  | OPTION_SWITCH_TO identifier expression
+  | OPTION_USING identifier
+  | OPTION_VIA identifier
+  ;
+
+/* 
+    TODO: Figure out how to allow lists to be split across multiple lines.
+*/
+agent_option_list:
+    agent_option
+  | agent_option_list agent_option
+  ;
+
+create_unit_option:
+    OPTION_ID identifier
+  ;
+
+create_unit_option_list:
+    create_unit_option
+  | create_unit_option_list create_unit_option
+  ;
+
+event_type:
+    EVENT_TYPE_ALERT
+  | EVENT_TYPE_AUDIO
+  | EVENT_TYPE_EFFECT
+  ;
+
+instruction_agent_options:
+    AGENT_OPTIONS agent_option_list
+  ;
+
+instruction_apply_count:
+    APPLY_COUNT expression
+  ;
+
+instruction_create_unit:
+    CREATE_UNIT create_unit_option_list
+  ;
+
+expression:
+    number
+  | expression '+' expression       { $$ = $1;                              }
+  | expression '-' expression       { $$ = $1 - $3;                         }
+  | expression '*' expression       { $$ = $1 * $3;                         }
+  | expression '/' expression
+    {
+        if($3)
+            $$ = $1 / $3;
+        else
+        {
+            $$ = 1.0f;
+            std::cerr << @3.first_line << ": division by zero" << std::endl;
+            ABORT();
+        }
+    }
+  | number '%' number               {
+                                        $$ = static_cast<float>(
+                                        static_cast<int>($1) %
+                                        static_cast<int>($3));
+                                    }
+  | '-' expression %prec UNARY      { $$ =  -$2;                            }
+  | '+' expression %prec UNARY      { $$ =   $2;                            }
+  | expression '^' expression       {
+                                        $$ = static_cast<float>(::pow($1, $3));
+                                    }
+  | '(' expression ')'              { $$ =   $2;                            }
+  ;
+
+identifier:
+    IDENTIFIER                      { $$ = d_scanner.matched();             }
+  ;
+
+identifier_dysjunction_list:
+    identifier
+  | identifier_dysjunction_list OPTION_OR identifier
+  ;
+
+instruction_chain:
+    CHAIN identifier
+  ;
+
+instruction_event_fail:
+    EVENT_FAIL event_type identifier
+  ;
+
+instruction_event_success:
+    EVENT_SUCCESS event_type identifier
+  ;
+
+instruction_execute_rule:
+    EXECUTE_RULE_ON_FAIL identifier
+  ;
+
+instruction_max_apply_count:
+    MAX_APPLY_COUNT number
+  ;
+
+instruction_priority:
+    PRIORITY number
+  ;
+
+instruction_rate:
+    RATE expression
+  ;
+
+instruction_sample:
+    SAMPLE sample_method instruction_sample_option_list
+  ;
+
+instruction_sample_option:
+    OPTION_COUNT expression
+  ;
+
+instruction_sample_option_list:
+    instruction_sample_option
+  | instruction_sample_option_list instruction_sample_option
+  ;
+
+instruction_test_or_transfer:
+    scope identifier relational_operator expression
+  | scope identifier transfer_direction expression
+  ;
+
+instruction_time_trigger:
+    TIME_TRIGGER time_trigger_period expression
+  ;
+
+number:
+    NUMBER                          { $$ = std::stof(d_scanner.matched());  }
+  ;
+
+relational_operator:
+    RELATIONAL_AT_LEAST
+  | RELATIONAL_IS
+  | RELATIONAL_AT_MOST
+  ;
+
+rule:
+    rule_declaration rule_instruction_list rule_end NEW_LINE
+  ;
+
+rule_declaration:
+    rule_type identifier NEW_LINE   { std::cout << $2 << std::endl; }
+  ;
+
+rule_end:
+    RULE_END                        { std::cout << "end of rule definition" << std::endl;  }
+  ;
+
+rule_instruction:
+    instruction_agent_options
+  | instruction_apply_count
+  | instruction_chain
+  | instruction_create_unit
+  | instruction_event_fail
+  | instruction_event_success
+  | instruction_execute_rule
+  | instruction_max_apply_count
+  | instruction_priority
+  | instruction_rate
+  | instruction_sample
+  | instruction_test_or_transfer
+  | instruction_time_trigger
+  | NEW_LINE
+  ;
+
+rule_instruction_list:
+    /* empty */
+  | rule_instruction_list rule_instruction
+  ;
+
+rule_type:
+    RULE_START_GLOBAL               { std::cout << "defining global rule: ";    }
+  | RULE_START_MAP                  { std::cout << "defining map rule: ";       }
+  | RULE_START_UNIT                 { std::cout << "defining unit rule: ";      }
+  | RULE_START_ZONE                 { std::cout << "defining zone rule: ";      }
+  ;
+
+sample_method:
+    RANDOM
+  ;
+
+scope:
+    /* empty */
+  | SCOPE_AGENT
+  | SCOPE_CONNECTED
+  | SCOPE_GLOBAL
+  | SCOPE_LOCAL
+  | SCOPE_MAP
+  ;
+
+time_trigger_period:
+    DAY
+  | HOUR
+  ;
+
+transfer_direction:
+    IN
+  | OUT
+  ;
+

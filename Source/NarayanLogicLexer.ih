@@ -1,0 +1,28 @@
+/*
+    Narayan™, a library for simulating artificial life in big cities.
+    Copyright (C) 2017-2018 Cartesian Theatre. All rights reserved.
+*/
+
+// Multiple include protection...
+#ifndef _NARAYAN_LOGIC_LEXER_IH_
+#define _NARAYAN_LOGIC_LEXER_IH_
+
+// Includes...
+
+    // Provided by Autoconf...
+    #include <config.h>
+
+    // Lexer user class...
+    #include "NarayanLogicLexer.h"
+
+    // Lexer requires the token symbols to be defined. The parser has these...
+    #include "NarayanLogicParserBase.h"
+
+    // i18n...
+    #include "gettext.h"
+    #define _(str) gettext (str)
+    #define N_(str) gettext_noop (str)
+
+// Multiple include protection...
+#endif
+
