@@ -28,7 +28,7 @@ AC_CONFIG_MACRO_DIR([Macros])
 # Sanity check to ensure generated ./configure script knows the directory on
 #  which it is being executed is actually the project directory by providing any
 #  unique source file...
-AC_CONFIG_SRCDIR([Source/Main.cpp])
+AC_CONFIG_SRCDIR([Source/Narayan.cpp])
 
 # Preserve all arguments for products that want them into config.h...
 config_flags="$0 $*"
@@ -235,8 +235,6 @@ AC_LANG([C++])
     AC_DEFINE_UNQUOTED([BREAKPOINT_TRAP], $BREAKPOINT_TRAP, [Trigger a software trap on this architecture...])
     AC_MSG_RESULT([$BREAKPOINT_TRAP])
 
-# TODO Compile and run constructor / destructor test to verify they work.
-
     # Function constructor attributes...
     AC_MSG_CHECKING([for function constructor attribute])
     AX_VAR_PUSHVALUE([CXXFLAGS],[-Werror=attributes])
@@ -288,6 +286,17 @@ AC_LANG([C++])
     fi
 
 # Check for headers and libraries...
+
+    # CppUnit for unit testing if unit tests were enabled. We want the
+    #  freedesktop.org version, but not clear if there is any way to verify that
+    #  this is their fork...
+    if test x"$enable_tests" = "xyes"; then
+        PKG_CHECK_MODULES(
+            [cppunit], [cppunit >= 1.14.0], [],
+            [AC_MSG_ERROR([cppunit >= 1.14.0 not found...])])
+        CXXFLAGS="$CXXFLAGS $cppunit_CFLAGS"
+        LIBS="$LIBS $cppunit_LIBS"
+    fi
 
     # OpenCL dispatch library (loader) acts as a proxy to the actual vendor
     #  implementation. The dispatch library is what we link to, but the actual
@@ -393,7 +402,8 @@ Prefix........................: $prefix
 Optional package features:
     Bash completion...........: $enable_bash_completion
     Native language support...: $USE_NLS
-    Valgrind unit test........: $enable_valgrind
+    Unit tests................: $enable_tests
+        Valgrind unit test....: $enable_valgrind
 
 Compiler......................: $CXX
 Linker........................: $LD

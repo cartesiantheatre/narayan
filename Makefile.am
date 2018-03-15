@@ -27,7 +27,7 @@ libnarayan_la_SOURCES =                                                         
     $(lexer_unclobbered_source_full_paths)                                      \
     $(parser_unclobbered_source_full_paths)                                     \
     Source/gettext.h                                                            \
-    Source/Main.cpp
+    Source/Narayan.cpp
 
 # Get build flags...
 libnarayan_la_CFLAGS     = $(AM_CFLAGS)

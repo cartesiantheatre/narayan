@@ -538,6 +538,8 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+cppunit_CFLAGS = @cppunit_CFLAGS@
+cppunit_LIBS = @cppunit_LIBS@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -600,7 +602,8 @@ AM_CPPFLAGS = \
 
 # Libraries to add for all tests. For some reason Automake doesn't have an
 #  AM_LDADD, so we use LDADD per Automake §8.1.2...
-LDADD = $(top_builddir)/libnarayan.la
+LDADD = $(top_builddir)/libnarayan.la $(CPPUNIT_LIBS)
+AM_CXXFLAGS = $(CPPUNIT_CFLAGS)
 
 # Test programs...
 TestLexer_SOURCES = TestLexer.cpp

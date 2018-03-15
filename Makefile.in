@@ -170,7 +170,7 @@ liblexerparser_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 libnarayan_la_DEPENDENCIES = liblexerparser.la
 am__objects_3 =
 am_libnarayan_la_OBJECTS = $(am__objects_3) $(am__objects_3) \
-	Source/libnarayan_la-Main.lo
+	Source/libnarayan_la-Narayan.lo
 libnarayan_la_OBJECTS = $(am_libnarayan_la_OBJECTS)
 libnarayan_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
@@ -458,6 +458,8 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+cppunit_CFLAGS = @cppunit_CFLAGS@
+cppunit_LIBS = @cppunit_LIBS@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -522,7 +524,7 @@ libnarayan_la_SOURCES = \
     $(lexer_unclobbered_source_full_paths)                                      \
     $(parser_unclobbered_source_full_paths)                                     \
     Source/gettext.h                                                            \
-    Source/Main.cpp
+    Source/Narayan.cpp
 
 
 # Get build flags...
@@ -783,7 +785,7 @@ Source/liblexerparser_la-NarayanLogicParser.lo:  \
 
 liblexerparser.la: $(liblexerparser_la_OBJECTS) $(liblexerparser_la_DEPENDENCIES) $(EXTRA_liblexerparser_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(liblexerparser_la_LINK)  $(liblexerparser_la_OBJECTS) $(liblexerparser_la_LIBADD) $(LIBS)
-Source/libnarayan_la-Main.lo: Source/$(am__dirstamp) \
+Source/libnarayan_la-Narayan.lo: Source/$(am__dirstamp) \
 	Source/$(DEPDIR)/$(am__dirstamp)
 
 libnarayan.la: $(libnarayan_la_OBJECTS) $(libnarayan_la_DEPENDENCIES) $(EXTRA_libnarayan_la_DEPENDENCIES) 
@@ -799,7 +801,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@Source/$(DEPDIR)/liblexerparser_la-NarayanLogicLexerBase.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Source/$(DEPDIR)/liblexerparser_la-NarayanLogicParser.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@Source/$(DEPDIR)/libnarayan_la-Main.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@Source/$(DEPDIR)/libnarayan_la-Narayan.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -839,12 +841,12 @@ Source/liblexerparser_la-NarayanLogicParser.lo: Source/NarayanLogicParser.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(liblexerparser_la_CPPFLAGS) $(CPPFLAGS) $(liblexerparser_la_CXXFLAGS) $(CXXFLAGS) -c -o Source/liblexerparser_la-NarayanLogicParser.lo `test -f 'Source/NarayanLogicParser.cpp' || echo '$(srcdir)/'`Source/NarayanLogicParser.cpp
 
-Source/libnarayan_la-Main.lo: Source/Main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnarayan_la_CPPFLAGS) $(CPPFLAGS) $(libnarayan_la_CXXFLAGS) $(CXXFLAGS) -MT Source/libnarayan_la-Main.lo -MD -MP -MF Source/$(DEPDIR)/libnarayan_la-Main.Tpo -c -o Source/libnarayan_la-Main.lo `test -f 'Source/Main.cpp' || echo '$(srcdir)/'`Source/Main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Source/$(DEPDIR)/libnarayan_la-Main.Tpo Source/$(DEPDIR)/libnarayan_la-Main.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Source/Main.cpp' object='Source/libnarayan_la-Main.lo' libtool=yes @AMDEPBACKSLASH@
+Source/libnarayan_la-Narayan.lo: Source/Narayan.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnarayan_la_CPPFLAGS) $(CPPFLAGS) $(libnarayan_la_CXXFLAGS) $(CXXFLAGS) -MT Source/libnarayan_la-Narayan.lo -MD -MP -MF Source/$(DEPDIR)/libnarayan_la-Narayan.Tpo -c -o Source/libnarayan_la-Narayan.lo `test -f 'Source/Narayan.cpp' || echo '$(srcdir)/'`Source/Narayan.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Source/$(DEPDIR)/libnarayan_la-Narayan.Tpo Source/$(DEPDIR)/libnarayan_la-Narayan.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Source/Narayan.cpp' object='Source/libnarayan_la-Narayan.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnarayan_la_CPPFLAGS) $(CPPFLAGS) $(libnarayan_la_CXXFLAGS) $(CXXFLAGS) -c -o Source/libnarayan_la-Main.lo `test -f 'Source/Main.cpp' || echo '$(srcdir)/'`Source/Main.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnarayan_la_CPPFLAGS) $(CPPFLAGS) $(libnarayan_la_CXXFLAGS) $(CXXFLAGS) -c -o Source/libnarayan_la-Narayan.lo `test -f 'Source/Narayan.cpp' || echo '$(srcdir)/'`Source/Narayan.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

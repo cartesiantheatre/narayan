@@ -598,7 +598,7 @@ PACKAGE_STRING='narayan 0.0.000'
 PACKAGE_BUGREPORT='https://github.com/cartesiantheatre/narayan/issues'
 PACKAGE_URL='https://www.cartesiantheatre.com'
 
-ac_unique_file="Source/Main.cpp"
+ac_unique_file="Source/Narayan.cpp"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -644,6 +644,8 @@ libyaml_cpp_LIBS
 libyaml_cpp_CFLAGS
 libOpenCL_LIBS
 libOpenCL_CFLAGS
+cppunit_LIBS
+cppunit_CFLAGS
 bash_completiondir
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
@@ -857,6 +859,8 @@ CXXCPP
 PKG_CONFIG
 PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
+cppunit_CFLAGS
+cppunit_LIBS
 libOpenCL_CFLAGS
 libOpenCL_LIBS
 libyaml_cpp_CFLAGS
@@ -1554,6 +1558,10 @@ Some influential environment variables:
               directories to add to pkg-config's search path
   PKG_CONFIG_LIBDIR
               path overriding pkg-config's built-in search path
+  cppunit_CFLAGS
+              C compiler flags for cppunit, overriding pkg-config
+  cppunit_LIBS
+              linker flags for cppunit, overriding pkg-config
   libOpenCL_CFLAGS
               C compiler flags for libOpenCL, overriding pkg-config
   libOpenCL_LIBS
@@ -22235,8 +22243,6 @@ _ACEOF
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $BREAKPOINT_TRAP" >&5
 $as_echo "$BREAKPOINT_TRAP" >&6; }
 
-# TODO Compile and run constructor / destructor test to verify they work.
-
     # Function constructor attributes...
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for function constructor attribute" >&5
 $as_echo_n "checking for function constructor attribute... " >&6; }
@@ -22539,6 +22545,83 @@ fi
     fi
 
 # Check for headers and libraries...
+
+    # CppUnit for unit testing if unit tests were enabled...
+    if test x"$enable_tests" = "xyes"; then
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for cppunit" >&5
+$as_echo_n "checking for cppunit... " >&6; }
+
+if test -n "$cppunit_CFLAGS"; then
+    pkg_cv_cppunit_CFLAGS="$cppunit_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"cppunit >= 1.14.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "cppunit >= 1.14.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_cppunit_CFLAGS=`$PKG_CONFIG --cflags "cppunit >= 1.14.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$cppunit_LIBS"; then
+    pkg_cv_cppunit_LIBS="$cppunit_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"cppunit >= 1.14.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "cppunit >= 1.14.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_cppunit_LIBS=`$PKG_CONFIG --libs "cppunit >= 1.14.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        cppunit_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "cppunit >= 1.14.0" 2>&1`
+        else
+	        cppunit_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "cppunit >= 1.14.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$cppunit_PKG_ERRORS" >&5
+
+	as_fn_error $? "cppunit >= 1.14.0 not found..." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	as_fn_error $? "cppunit >= 1.14.0 not found..." "$LINENO" 5
+else
+	cppunit_CFLAGS=$pkg_cv_cppunit_CFLAGS
+	cppunit_LIBS=$pkg_cv_cppunit_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+        CXXFLAGS="$CXXFLAGS $cppunit_CFLAGS"
+        LIBS="$LIBS $cppunit_LIBS"
+    fi
 
     # OpenCL dispatch library (loader) acts as a proxy to the actual vendor
     #  implementation. The dispatch library is what we link to, but the actual
@@ -25926,7 +26009,8 @@ Prefix........................: $prefix
 Optional package features:
     Bash completion...........: $enable_bash_completion
     Native language support...: $USE_NLS
-    Valgrind unit test........: $enable_valgrind
+    Unit tests................: $enable_tests
+        Valgrind unit test....: $enable_valgrind
 
 Compiler......................: $CXX
 Linker........................: $LD

@@ -45,7 +45,9 @@ AM_CPPFLAGS =                                                                   
 
 # Libraries to add for all tests. For some reason Automake doesn't have an
 #  AM_LDADD, so we use LDADD per Automake §8.1.2...
-LDADD = $(top_builddir)/libnarayan.la
+LDADD = $(top_builddir)/libnarayan.la $(CPPUNIT_LIBS)
+
+AM_CXXFLAGS = $(CPPUNIT_CFLAGS)
 
 # Test programs...
 TestLexer_SOURCES       = TestLexer.cpp
