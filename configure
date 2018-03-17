@@ -22546,7 +22546,9 @@ fi
 
 # Check for headers and libraries...
 
-    # CppUnit for unit testing if unit tests were enabled...
+    # CppUnit for unit testing if unit tests were enabled. We want the
+    #  freedesktop.org version, but not clear if there is any way to verify that
+    #  this is their fork...
     if test x"$enable_tests" = "xyes"; then
 
 pkg_failed=no
