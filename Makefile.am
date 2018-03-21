@@ -21,29 +21,6 @@ DEFS+= -DSYSCONFDIR='"$(sysconfdir)"' -DLOCALEDIR="\"$(localedir)\"" @DEFS@
 #  library prefix...
 lib_LTLIBRARIES = libnarayan.la
 
-# narayan-designer product option variables containing list of sources that need
-#  to be compiled and linked to produce the product...
-libnarayan_la_SOURCES =                                                         \
-    $(lexer_unclobbered_source_full_paths)                                      \
-    $(parser_unclobbered_source_full_paths)                                     \
-    Source/gettext.h                                                            \
-    Source/Narayan.cpp
-
-# Get build flags...
-libnarayan_la_CFLAGS     = $(AM_CFLAGS)
-libnarayan_la_CXXFLAGS   = $(AM_CXXFLAGS)
-libnarayan_la_LDFLAGS    = -lstdc++ $(AM_LDFLAGS)
-libnarayan_la_LIBADD     = liblexerparser.la
-
-# Preprocessor flags. Note that the include search paths are paired between
-#  source and build directory as per Automake manual §8.7 to facilitate VPATH
-#  builds...
-libnarayan_la_CPPFLAGS   =                                                      \
-    -DSYSCONFDIR='"$(sysconfdir)"'                                              \
-    -I$(srcdir)/Source/                                                         \
-    -I$(builddir)/Source/                                                       \
-    $(AM_CPPFLAGS)
-
 # Source files for NarayanLogic lexer clobbered by each flexc++(1) invocation.
 #  These should always be created within $(builddir)...
 lexer_clobbered_source_files_only =                                             \
@@ -86,6 +63,31 @@ parser_unclobbered_source_full_paths =                                          
     Source/NarayanLogicParser.h                                                 \
     Source/NarayanLogicParser.ih
 
+# narayan-designer product option variables containing list of sources that need
+#  to be compiled and linked to produce the product...
+libnarayan_la_SOURCES =                                                         \
+    $(lexer_unclobbered_source_full_paths)                                      \
+    $(parser_unclobbered_source_full_paths)                                     \
+    Source/FiniteStateMachine.h                                                 \
+    Source/FiniteStateMachine.inl                                               \
+    Source/gettext.h                                                            \
+    Source/Narayan.cpp
+
+# Get build flags...
+libnarayan_la_CFLAGS     = $(AM_CFLAGS)
+libnarayan_la_CXXFLAGS   = $(AM_CXXFLAGS)
+libnarayan_la_LDFLAGS    = -lstdc++ $(AM_LDFLAGS)
+libnarayan_la_LIBADD     = liblexerparser.la
+
+# Preprocessor flags. Note that the include search paths are paired between
+#  source and build directory as per Automake manual §8.7 to facilitate VPATH
+#  builds...
+libnarayan_la_CPPFLAGS   =                                                      \
+    -DSYSCONFDIR='"$(sysconfdir)"'                                              \
+    -I$(srcdir)/Source/                                                         \
+    -I$(builddir)/Source/                                                       \
+    $(AM_CPPFLAGS)
+
 # Both flexc++(1) and bisonc++(1) at the time of writing emit code that can
 #  raise warnings, or even errors in the case of -Werror, when used with GCC 7
 #  series compilers. I have submitted a number of patches to upstream with
@@ -98,7 +100,7 @@ parser_unclobbered_source_full_paths =                                          
 #  -Wextra switches that raise issues like switch-case fall throughs, unused
 #  variables, and so forth...
 noinst_LTLIBRARIES = liblexerparser.la
-liblexerparser_la_SOURCES   =                                                   \
+nodist_liblexerparser_la_SOURCES   =                                            \
     $(lexer_clobbered_source_full_paths)                                        \
     $(parser_clobbered_source_full_paths)
 liblexerparser_la_CXXFLAGS  = -Wimplicit-fallthrough=0 -Wno-unused-parameter
@@ -221,7 +223,7 @@ update-po: check-gettext
 	@echo "Checking if POTFILES.in needs to be updated..."
 	@cd $(srcdir) ; \
 	find Source \( -iname "*.lpp" -o -iname "*.ypp" \) -print >> Translations/POTFILES.in.2 ; \
-	find Source \( -iname "*.cpp" -o -iname "*.cpp.in" \) -print >> Translations/POTFILES.in.2 ; \
+	find Source \( -iname "*.cpp" -o -iname "*.cpp.in" -o -iname "*.inl" \) -print >> Translations/POTFILES.in.2 ; \
 	find Source \( -iname "*.h" -o -iname "*.h.in" -o -iname "*.ih" \) -print >> Translations/POTFILES.in.2 ; \
 	$(SED) -i '/config.h$$/d' Translations/POTFILES.in.2 ; \
 	$(SED) -i '/NarayanLogicLexerBase.cpp/d' Translations/POTFILES.in.2 ; \

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: narayan 0.0.000\n"
 "Report-Msgid-Bugs-To: \"Cartesian Theatre <info@cartesiantheatre.com>\"\n"
-"POT-Creation-Date: 2018-03-11 22:22-0700\n"
+"POT-Creation-Date: 2018-03-20 20:52-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,30 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: Source/FiniteStateMachine.inl:46
+msgid "signal not registered"
+msgstr ""
+
+#: Source/FiniteStateMachine.inl:50
+msgid "unknown previous state"
+msgstr ""
+
+#: Source/FiniteStateMachine.inl:54
+msgid "unknown new state"
+msgstr ""
+
+#: Source/FiniteStateMachine.inl:110
+msgid "signal is not registered"
+msgstr ""
+
+#: Source/FiniteStateMachine.inl:309
+msgid "signal already registered"
+msgstr ""
+
+#: Source/FiniteStateMachine.inl:335
+msgid "machine state already registered"
+msgstr ""
 
 #. TODO: Fix this because this block is never executed.
 #: Source/NarayanLogicLexer.lpp:43

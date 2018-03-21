@@ -1,7 +1,8 @@
 Source/config.h.in
 Source/FiniteStateMachine.h
+Source/FiniteStateMachine.inl
 Source/gettext.h
-Source/Main.cpp
+Source/Narayan.cpp
 Source/NarayanLogicLexer.h
 Source/NarayanLogicLexer.ih
 Source/NarayanLogicLexer.lpp
