@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: narayan
+URL: @PACKAGE_BUGREPORT@
+Description: A library for simulating artificial life in big cities.
+Version: @PACKAGE_VERSION@
+Requires.private: OpenCL >= 2.1
+Cflags: -I'${includedir}/narayan/'
+Libs: -L${libdir} -lnarayan
+

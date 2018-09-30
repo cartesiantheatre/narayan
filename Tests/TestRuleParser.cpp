@@ -9,7 +9,7 @@
     #include <config.h>
 
     // Our headers...
-    #include "NarayanLogicParser.h"
+    #include "RuleParser.h"
 
     // Standard C++ / POSIX system headers...
     #include <cstdlib>
@@ -55,17 +55,20 @@ int main(const int ArgumentCount, const char *Arguments[])
     {
         // Verify that we were provided with a single argument to a script...
         if(ArgumentCount != 2)
-            throw runtime_error(_("expected path to NarayanLogic script"));
+            throw runtime_error(_("expected path to rule script"));
 
         // Retrieve path...
         const string ScriptPath = Arguments[1];
 
-        // Initialize parser to sample NarayanLogic script...
-        NarayanLogicParser Parser(ScriptPath);
+        // Initialize parser to sample rule script...
+        Narayan::RuleParser Parser(ScriptPath);
 
         // Attempt to parse it and bail if unsuccessful...
         if(Parser.parse() != 0)
             return EXIT_FAILURE;
+
+        // Test was successfull...
+        return EXIT_SUCCESS;
     }
 
     // Something went wrong...
@@ -77,7 +80,5 @@ int main(const int ArgumentCount, const char *Arguments[])
         // Bail...
         return EXIT_FAILURE;
     }
-
-    return EXIT_SUCCESS;
 }
 

@@ -4,14 +4,14 @@
 */
 
 /*
-    Invocation: $ bisonc++ --show-filenames --thread-safe NarayanLogicParser.ypp
+    Invocation: $ bisonc++ --show-filenames --thread-safe RuleParser.ypp
 
     Generates:
 
-        Baseclass header:       NarayanLogicParserBase.h    (not modifiable, clobbered / generated repeatedly in $builddir)
-        Class header:           NarayanLogicParser.h        (user modifiable, preserved / generated once in $srcdir)
-        Implementation header:  NarayanLogicParser.ih       (user modifiable, preserved / generated once in $srcdir)
-        Parser implementation:  NarayanLogicParser.cpp      (not modifiable, clobbered / generated repeatedly in $builddir)
+        Baseclass header:       RuleParserBase.h    (not modifiable, clobbered / generated repeatedly in $builddir)
+        Class header:           RuleParser.h        (user modifiable, preserved / generated once in $srcdir)
+        Implementation header:  RuleParser.ih       (user modifiable, preserved / generated once in $srcdir)
+        Parser implementation:  RuleParser.cpp      (not modifiable, clobbered / generated repeatedly in $builddir)
 */
 
 // Bison declarations section contains declarations that define parser settings,
@@ -19,16 +19,16 @@
 //  forth...
 
     // Where to find the lexer...
-    %scanner                    "NarayanLogicLexer.h"
+    %scanner                    "RuleLexer.h"
 
     // What to call our lexer when it is declared...
-    %scanner-class-name         NarayanLogicLexer
+    %scanner-class-name         RuleLexer
 
     // Lexer's method to tokenize...
     %scanner-token-function     d_scanner.lex()
 
     // What to name the parser class which contains the lexer as a member...
-    %class-name                 NarayanLogicParser
+    %class-name                 RuleParser
 
     // Terminal tokens with associativity which determines how repeated uses of
     //  the given symbol nest, provided in order from lowest to highest
@@ -44,10 +44,10 @@
 
     // Define the parser's base class header file containing the parser's
     //  symbolic tokens...
-    %baseclass-header           NarayanLogicParserBase.h
+    %baseclass-header           RuleParserBase.h
 
     // Define the name of source file containing the parser implementation...
-    %parsefun-source            NarayanLogicParser.cpp
+    %parsefun-source            RuleParser.cpp
 
     // Define semantic value types using polymorphism instead of traditional
     //  union interface. This was added in bisonc++(1) in 2007, whereas bison(1)
@@ -136,6 +136,9 @@
     //  counter data member in a thread safe manner. Not available until version
     //  6.00.00. In mean time, specify --thread-safe instead for same effect...
     %thread-safe
+    
+    // Situate everything within the Narayan namespace...
+    %namespace                  Narayan
 
 // Grammar rules section contains machine readable Backus-Naur form with
 //  intended actions (semantics) to perform...

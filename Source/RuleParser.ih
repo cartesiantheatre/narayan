@@ -4,8 +4,8 @@
 */
 
 // Multiple include protection...
-#ifndef _NARAYAN_LOGIC_PARSER_IH_
-#define _NARAYAN_LOGIC_PARSER_IH_
+#ifndef _RULE_PARSER_IH_
+#define _RULE_PARSER_IH_
 
 // Includes...
 
@@ -13,7 +13,7 @@
     #include <config.h>
 
     // Parser user class...
-    #include "NarayanLogicParser.h"
+    #include "RuleParser.h"
 
     // Standard C++ / POSIX system headers...
     #include <cmath>
@@ -24,8 +24,12 @@
     #define _(str) gettext (str)
     #define N_(str) gettext_noop (str)
 
+// Situate everything within the Narayan namespace...
+namespace Narayan
+{
+
 // Constructor expecting path to input file...
-NarayanLogicParser::NarayanLogicParser(const std::string &InputFile)
+RuleParser::RuleParser(const std::string &InputFile)
     : d_scanner(InputFile, "")
 {
     // Disable automatic printing of debug information in case %debug 
@@ -34,7 +38,7 @@ NarayanLogicParser::NarayanLogicParser(const std::string &InputFile)
 }
 
 // Called whenever the parser encounters a syntax error...
-inline void NarayanLogicParser::error()
+inline void RuleParser::error()
 {
     // Prepend the input file name and offending line number into the exception
     //  string...
@@ -53,18 +57,18 @@ inline void NarayanLogicParser::error()
 }
 
 // $insert lex
-inline int NarayanLogicParser::lex()
+inline int RuleParser::lex()
 {
     return d_scanner.lex();
 }
 
-inline void NarayanLogicParser::print()         
+inline void RuleParser::print()         
 {
     print__();           // displays tokens if --print was specified
 }
 
 // Semantic error raised an exception during a semantic action...
-inline void NarayanLogicParser::exceptionHandler(const std::exception &Exception)
+inline void RuleParser::exceptionHandler(const std::exception &Exception)
 {
     // Prepend the input file name and offending line number into the exception
     //  string...
@@ -81,9 +85,11 @@ inline void NarayanLogicParser::exceptionHandler(const std::exception &Exception
     throw RuntimeException;
 }
 
+}
+
 /*
     Add here includes that are only required for the compilation of
-    NarayanLogicParser's sources.
+    RuleParser's sources.
 */
 
 // Multiple include protection...

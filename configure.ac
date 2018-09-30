@@ -161,9 +161,9 @@ AM_GNU_GETTEXT_VERSION([0.19.8])
     # chmod...
     AC_PATH_PROG([CHMOD], [chmod])
 
-    # C++14 compiler with strict conformance required...
+    # C++17 compiler with strict conformance required...
     AC_PROG_CXX
-    AX_CXX_COMPILE_STDCXX_14([noext], [mandatory])
+    AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
 
     # C++ preprocessor...
     AC_PROG_CXXCPP
@@ -213,6 +213,9 @@ AM_GNU_GETTEXT_VERSION([0.19.8])
 AC_LANG([C++])
 
 # Substitute autoconfig macros in various non-make related files...
+
+    # Pkg-config...
+    AC_CONFIG_FILES([narayan.pc])
 
     # Update version string...
     AC_CONFIG_FILES([Source/Version.h])
@@ -289,13 +292,12 @@ AC_LANG([C++])
 
     # CppUnit for unit testing if unit tests were enabled. We want the
     #  freedesktop.org version, but not clear if there is any way to verify that
-    #  this is their fork...
+    #  this is their fork. Note that we don't append the global compilation and
+    #  link flags with cppunit's because they're only needed for unit tests...
     if test x"$enable_tests" = "xyes"; then
         PKG_CHECK_MODULES(
             [cppunit], [cppunit >= 1.14.0], [],
             [AC_MSG_ERROR([cppunit >= 1.14.0 not found...])])
-        CXXFLAGS="$CXXFLAGS $cppunit_CFLAGS"
-        LIBS="$LIBS $cppunit_LIBS"
     fi
 
     # OpenCL dispatch library (loader) acts as a proxy to the actual vendor

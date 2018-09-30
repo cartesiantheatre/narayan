@@ -9,7 +9,7 @@
     #include <config.h>
 
     // Our headers...
-    #include "NarayanLogicLexer.h"
+    #include "RuleLexer.h"
 
     // Standard C++ / POSIX system headers...
     #include <cstdlib>
@@ -56,13 +56,13 @@ int main(const int ArgumentCount, const char *Arguments[])
     {
         // Verify that we were provided with a single argument to a script...
         if(ArgumentCount != 2)
-            throw runtime_error(_("expected path to NarayanLogic script"));
+            throw runtime_error(_("expected path to rule script"));
 
         // Retrieve path...
         const string ScriptPath = Arguments[1];
 
-        // Initialize lexer to sample NarayanLogic script...
-        NarayanLogicLexer Lexer(ScriptPath);
+        // Initialize lexer to sample rule script...
+        Narayan::RuleLexer Lexer(ScriptPath);
 
         // Enable printing of tokens and matching value...
         Lexer.setPrint(true);
@@ -72,7 +72,7 @@ int main(const int ArgumentCount, const char *Arguments[])
         {
         }
         
-        // We're done...
+        // Test was successfull...
         return EXIT_SUCCESS;
     }
 

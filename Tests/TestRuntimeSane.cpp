@@ -9,7 +9,7 @@
     #include <config.h>
 
     // Our headers...
-    #include "NarayanLogicLexer.h"
+    #include "Simulation.h"
 
     // Standard C++ / POSIX system headers...
     #include <cstdlib>
@@ -51,9 +51,13 @@ int main()
 
     #endif
 
-    // Try to lex the input...
+    // Try something...
     try
     {
+        // Just try and instantiate a simulation object...
+        Narayan::Simulation *TestSimulation = new Narayan::Simulation;
+        delete TestSimulation;
+
         // We're done...
         return EXIT_SUCCESS;
     }

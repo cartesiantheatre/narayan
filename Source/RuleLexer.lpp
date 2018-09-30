@@ -1,0 +1,108 @@
+/*
+    Narayan™, a library for simulating artificial life in big cities.
+    Copyright (C) 2017-2018 Cartesian Theatre. All rights reserved.
+*/
+
+/*
+    Invocation: $ flexc++ --show-filenames RuleLexer.lpp
+
+    Generates:
+
+        Baseclass header:       RuleLexerBase.h     (not modifiable, clobbered / generated repeatedly in $builddir)
+        Class header:           RuleLexer.h         (user modifiable, preserved / generated once in $srcdir)
+        Implementation header:  RuleLexer.ih        (user modifiable, preserved / generated once in $srcdir)
+        Lexer implementation:   RuleLexerBase.cpp   (not modifiable, clobbered / generated repeatedly in $builddir)
+*/
+
+// Definition section is ommitted when using flexc++(1) because it has no need
+//  for them, unlike like flex(1)...
+
+    // Define the class name...
+    %class-name         = "RuleLexer"
+    
+    // Define the base class header file name...
+    %baseclass-header   = "RuleLexerBase.h"
+    
+    // Define the file name containing the lexer implementation...
+    %lex-source         = "RuleLexerBase.cpp"
+    
+    // Generate code to display tokens and matching text if requested at runtime...
+    %print-tokens
+    
+    // Situate everything within the Narayan namespace...
+    %namespace          = "Narayan"
+
+// A list of regular expressions used to identify every possible terminal token
+//  that can be returned by the lexer...
+%%
+
+// Skip single line comments...
+"//".*                                  { /* std::cout << _("single line comment") << std::endl; */ }
+
+// Skip multiline comments and raise an error on unterminated ones...
+[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]     { /* std::cout << _("entering multiline comment") << std::endl; */}
+[/][*]                                  {
+                                            /* TODO: Fix this because this block is never executed. */
+                                            std::cout << _("re-entering multiline comment") << std::endl;
+                                        }
+
+// Skip white space characters...
+[ \t]+                                  { /* Do nothing */ }
+
+// ...except the new line character...
+\n                                      { return RuleParser::NEW_LINE;                  }
+
+// Keywords...
+agent                                   { return RuleParser::SCOPE_AGENT;               }
+alert                                   { return RuleParser::EVENT_TYPE_ALERT;          }
+applyCount                              { return RuleParser::APPLY_COUNT;               }
+atLeast                                 { return RuleParser::RELATIONAL_AT_LEAST;       }
+atMost                                  { return RuleParser::RELATIONAL_AT_MOST;        }
+audio                                   { return RuleParser::EVENT_TYPE_AUDIO;          }
+chain                                   { return RuleParser::CHAIN;                     }
+connected                               { return RuleParser::SCOPE_CONNECTED;           }
+\-count                                 { return RuleParser::OPTION_COUNT;              }
+createUnit                              { return RuleParser::CREATE_UNIT;               }
+Day                                     { return RuleParser::DAY;                       }
+effect                                  { return RuleParser::EVENT_TYPE_EFFECT;         }
+end                                     { return RuleParser::RULE_END;                  }
+failEvent                               { return RuleParser::EVENT_FAIL;                }
+global                                  { return RuleParser::SCOPE_GLOBAL;              }
+globalRule                              { return RuleParser::RULE_START_GLOBAL;         }
+Hour                                    { return RuleParser::HOUR;                      }
+\-id                                    { return RuleParser::OPTION_ID;                 }
+in                                      { return RuleParser::IN;                        }
+is                                      { return RuleParser::RELATIONAL_IS;             }
+local                                   { return RuleParser::SCOPE_LOCAL;               }
+map                                     { return RuleParser::SCOPE_MAP;                 }
+mapRule                                 { return RuleParser::RULE_START_MAP;            }
+maxApplyCount                           { return RuleParser::MAX_APPLY_COUNT;           }
+onFail                                  { return RuleParser::EXECUTE_RULE_ON_FAIL;      }
+options                                 { return RuleParser::AGENT_OPTIONS;             }
+\-or                                    { return RuleParser::OPTION_OR;                 }
+out                                     { return RuleParser::OUT;                       }
+priority                                { return RuleParser::PRIORITY;                  }
+random                                  { return RuleParser::RANDOM;                    }
+rate                                    { return RuleParser::RATE;                      }
+\-repeatAfter                           { return RuleParser::OPTION_REPEAT_AFTER;       }
+sample                                  { return RuleParser::SAMPLE;                    }
+\-sendTo                                { return RuleParser::OPTION_SEND_TO;            }
+successEvent                            { return RuleParser::EVENT_SUCCESS;             }
+\-switchTo                              { return RuleParser::OPTION_SWITCH_TO;          }
+timeTrigger                             { return RuleParser::TIME_TRIGGER;              }
+unitRule                                { return RuleParser::RULE_START_UNIT;           }
+\-using                                 { return RuleParser::OPTION_USING;              }
+\-via                                   { return RuleParser::OPTION_VIA;                }
+zoneRule                                { return RuleParser::RULE_START_ZONE;           }
+
+// Numbers...
+[-+]?[0-9]*\.?[0-9]+                    { return RuleParser::NUMBER;                    }
+
+// Identifiers...
+[[:alpha:]_][[:alpha:][:digit:]_]*      { return RuleParser::IDENTIFIER;                }
+
+// Anything else shouldn't be recognized...
+.                                       { throw std::runtime_error(_("unrecognized token"));    }
+
+%%
+

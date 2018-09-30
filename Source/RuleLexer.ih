@@ -4,8 +4,8 @@
 */
 
 // Multiple include protection...
-#ifndef _NARAYAN_LOGIC_LEXER_IH_
-#define _NARAYAN_LOGIC_LEXER_IH_
+#ifndef _RULE_LEXER_IH_
+#define _RULE_LEXER_IH_
 
 // Includes...
 
@@ -13,10 +13,10 @@
     #include <config.h>
 
     // Lexer user class...
-    #include "NarayanLogicLexer.h"
+    #include "RuleLexer.h"
 
     // Lexer requires the token symbols to be defined. The parser has these...
-    #include "NarayanLogicParserBase.h"
+    #include "RuleParserBase.h"
 
     // i18n...
     #include "gettext.h"

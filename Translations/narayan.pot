@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: narayan 0.0.000\n"
 "Report-Msgid-Bugs-To: \"Cartesian Theatre <info@cartesiantheatre.com>\"\n"
-"POT-Creation-Date: 2018-03-20 20:52-0700\n"
+"POT-Creation-Date: 2018-03-21 21:17-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,15 +42,15 @@ msgid "machine state already registered"
 msgstr ""
 
 #. TODO: Fix this because this block is never executed.
-#: Source/NarayanLogicLexer.lpp:43
+#: Source/RuleLexer.lpp:46
 msgid "re-entering multiline comment"
 msgstr ""
 
 #. Anything else shouldn't be recognized...
-#: Source/NarayanLogicLexer.lpp:102
+#: Source/RuleLexer.lpp:105
 msgid "unrecognized token"
 msgstr ""
 
-#: Source/NarayanLogicParser.ih:45
+#: Source/RuleParser.ih:49
 msgid "syntax error: "
 msgstr ""

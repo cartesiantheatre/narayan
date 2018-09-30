@@ -10,17 +10,19 @@ if ENABLE_TESTS
 
 # Product list of programs to build during check target...
 check_PROGRAMS =                            \
-    TestLexer                               \
-    TestParser                              \
+    TestGraph                               \
+    TestRuleLexer                           \
+    TestRuleParser                          \
     TestRuntimeSane
 
 # Product list of scripts to generate during check target, including pattern
 #  matching stems...
 check_SCRIPTS =                             \
-    TestNarayanLogic
+    TestRuleLexerParser
 
 # GCS § 7.2.6 requires a check target. Targets to execute for check target...
 TESTS =                                     \
+    TestGraph                               \
     TestRuntimeSane                         \
     Rules/Map/GrowGrass.nl                  \
     Rules/Unit/CreateAlloy.nl               \
@@ -31,9 +33,9 @@ TESTS =                                     \
 
 endif
 
-# Custom test runner for NarayanLogic scripts per Automake §15.2.3...
+# Custom test runner for rule scripts per Automake §15.2.3...
 TEST_EXTENSIONS = .nl
-NL_LOG_COMPILER  = $(top_builddir)/Tests/TestNarayanLogic
+NL_LOG_COMPILER  = $(top_builddir)/Tests/TestRuleLexerParser
 
 # Preprocessor flags for all tests. Note that the include search paths are
 #  paired between source and build directory as per Automake §8.7 to facilitate
@@ -45,14 +47,16 @@ AM_CPPFLAGS =                                                                   
 
 # Libraries to add for all tests. For some reason Automake doesn't have an
 #  AM_LDADD, so we use LDADD per Automake §8.1.2...
-LDADD = $(top_builddir)/libnarayan.la $(CPPUNIT_LIBS)
+LDADD = $(top_builddir)/libnarayan.la $(cppunit_LIBS)
 
-AM_CXXFLAGS = $(CPPUNIT_CFLAGS)
+# Preprocessor flags...
+AM_CXXFLAGS = $(cppunit_CFLAGS)
 
 # Test programs...
-TestLexer_SOURCES       = TestLexer.cpp
-TestParser_SOURCES      = TestParser.cpp
-TestRuntimeSane_SOURCES = TestRuntimeSane.cpp
+TestGraph_SOURCES           = TestGraph.cpp
+TestRuleLexer_SOURCES       = TestRuleLexer.cpp
+TestRuleParser_SOURCES      = TestRuleParser.cpp
+TestRuntimeSane_SOURCES     = TestRuntimeSane.cpp
 
 # Manually add these things to distribution package when dist target is run...
 EXTRA_DIST =                                \
@@ -65,22 +69,20 @@ EXTRA_DIST =                                \
 
 # List of files to clean up during clean target...
 CLEANFILES =                                \
-    TestLexer                               \
-    TestNarayanLogic                        \
-    TestParser                              \
-    TestRuntimeSane
+    TestRuleLexerParser                     \
+    $(check_PROGRAMS)
 
 # If valgrind was enabled, perform its unit test...
 #if VALGRIND_ENABLED
 #check_SCRIPTS += Valgrind.sh
 #endif
 
-# This script is used as a test harness for each Narayan Logic script to test.
-#  It runs the latter through both the lexer and parser to verify successful
+# This script is used as a test harness for each rule script to test. It runs
+#  the latter through both the lexer and parser to verify successful
 #  consumption...
-TestNarayanLogic: TestLexer TestParser
+TestRuleLexerParser: TestRuleLexer TestRuleParser
 	$(AM_V_GEN)echo 'set -e -u' > $@; \
-	echo './TestLexer "$$1"' >> $@; \
-	echo './TestParser "$$1"' >> $@; \
+	echo './TestRuleLexer "$$1"' >> $@; \
+	echo './TestRuleParser "$$1"' >> $@; \
 	$(CHMOD) +x $@
 

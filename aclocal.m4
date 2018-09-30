@@ -1,6 +1,6 @@
-# generated automatically by aclocal 1.15 -*- Autoconf -*-
+# generated automatically by aclocal 1.15.1 -*- Autoconf -*-
 
-# Copyright (C) 1996-2014 Free Software Foundation, Inc.
+# Copyright (C) 1996-2017 Free Software Foundation, Inc.
 
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -204,6 +204,44 @@ AC_DEFUN([AX_GCC_X86_CPU_SUPPORTS],
 ])
 
 # ===========================================================================
+#    https://www.gnu.org/software/autoconf-archive/ax_require_defined.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_REQUIRE_DEFINED(MACRO)
+#
+# DESCRIPTION
+#
+#   AX_REQUIRE_DEFINED is a simple helper for making sure other macros have
+#   been defined and thus are available for use.  This avoids random issues
+#   where a macro isn't expanded.  Instead the configure script emits a
+#   non-fatal:
+#
+#     ./configure: line 1673: AX_CFLAGS_WARN_ALL: command not found
+#
+#   It's like AC_REQUIRE except it doesn't expand the required macro.
+#
+#   Here's an example:
+#
+#     AX_REQUIRE_DEFINED([AX_CHECK_LINK_FLAG])
+#
+# LICENSE
+#
+#   Copyright (c) 2014 Mike Frysinger <vapier@gentoo.org>
+#
+#   Copying and distribution of this file, with or without modification, are
+#   permitted in any medium without royalty provided the copyright notice
+#   and this notice are preserved. This file is offered as-is, without any
+#   warranty.
+
+#serial 2
+
+AC_DEFUN([AX_REQUIRE_DEFINED], [dnl
+  m4_ifndef([$1], [m4_fatal([macro ]$1[ is not defined; is a m4 file missing?])])
+])dnl AX_REQUIRE_DEFINED
+
+# ===========================================================================
 #    https://www.gnu.org/software/autoconf-archive/ax_valgrind_check.html
 # ===========================================================================
 #
@@ -241,21 +279,19 @@ AC_DEFUN([AX_GCC_X86_CPU_SUPPORTS],
 #     AX_VALGRIND_DFLT([sgcheck], [off])
 #     AX_VALGRIND_CHECK
 #
-#   Makefile.am:
+#   in each Makefile.am with tests:
 #
 #     @VALGRIND_CHECK_RULES@
 #     VALGRIND_SUPPRESSIONS_FILES = my-project.supp
 #     EXTRA_DIST = my-project.supp
 #
-#   This results in a "check-valgrind" rule being added to any Makefile.am
-#   which includes "@VALGRIND_CHECK_RULES@" (assuming the module has been
-#   configured with --enable-valgrind). Running `make check-valgrind` in
-#   that directory will run the module's test suite (`make check`) once for
-#   each of the available Valgrind tools (out of memcheck, helgrind and drd)
-#   while the sgcheck will be skipped unless enabled again on the
-#   commandline with --enable-valgrind-sgcheck. The results for each check
-#   will be output to test-suite-$toolname.log. The target will succeed if
-#   there are zero errors and fail otherwise.
+#   This results in a "check-valgrind" rule being added. Running `make
+#   check-valgrind` in that directory will recursively run the module's test
+#   suite (`make check`) once for each of the available Valgrind tools (out
+#   of memcheck, helgrind and drd) while the sgcheck will be skipped unless
+#   enabled again on the commandline with --enable-valgrind-sgcheck. The
+#   results for each check will be output to test-suite-$toolname.log. The
+#   target will succeed if there are zero errors and fail otherwise.
 #
 #   Alternatively, a "check-valgrind-$TOOL" rule will be added, for $TOOL in
 #   memcheck, helgrind, drd and sgcheck. These are useful because often only
@@ -272,7 +308,7 @@ AC_DEFUN([AX_GCC_X86_CPU_SUPPORTS],
 #   and this notice are preserved.  This file is offered as-is, without any
 #   warranty.
 
-#serial 15
+#serial 17
 
 dnl Configured tools
 m4_define([valgrind_tool_list], [[memcheck], [helgrind], [drd], [sgcheck]])
@@ -283,6 +319,10 @@ m4_foreach([vgtool], [valgrind_tool_list],
 AC_DEFUN([AX_VALGRIND_DFLT],[
 	m4_define([en_dflt_valgrind_$1], [$2])
 ])dnl
+
+AM_EXTRA_RECURSIVE_TARGETS([check-valgrind])
+m4_foreach([vgtool], [valgrind_tool_list],
+	[AM_EXTRA_RECURSIVE_TARGETS([check-valgrind-]vgtool)])
 
 AC_DEFUN([AX_VALGRIND_CHECK],[
 	dnl Check for --enable-valgrind
@@ -380,7 +420,7 @@ valgrind_quiet_ = $(valgrind_quiet_$(AM_DEFAULT_VERBOSITY))
 valgrind_quiet_0 = --quiet
 valgrind_v_use   = $(valgrind_v_use_$(V))
 valgrind_v_use_  = $(valgrind_v_use_$(AM_DEFAULT_VERBOSITY))
-valgrind_v_use_0 = @echo "  USE   " $(patsubst check-valgrind-%,%,$''@):;
+valgrind_v_use_0 = @echo "  USE   " $(patsubst check-valgrind-%-am,%,$''@):;
 
 # Support running with and without libtool.
 ifneq ($(LIBTOOL),)
@@ -390,7 +430,7 @@ valgrind_lt =
 endif
 
 # Use recursive makes in order to ignore errors during check
-check-valgrind:
+check-valgrind-am:
 ifeq ($(VALGRIND_ENABLED),yes)
 	$(A''M_V_at)$(MAKE) $(AM_MAKEFLAGS) -k \
 		$(foreach tool, $(valgrind_enabled_tools), check-valgrind-$(tool))
@@ -409,14 +449,16 @@ VALGRIND_LOG_COMPILER = \
 	$(valgrind_lt) \
 	$(VALGRIND) $(VALGRIND_SUPPRESSIONS) --error-exitcode=1 $(VALGRIND_FLAGS)
 
-define valgrind_tool_rule =
-check-valgrind-$(1):
+define valgrind_tool_rule
+check-valgrind-$(1)-am:
 ifeq ($$(VALGRIND_ENABLED)-$$(ENABLE_VALGRIND_$(1)),yes-yes)
+ifneq ($$(TESTS),)
 	$$(valgrind_v_use)$$(MAKE) check-TESTS \
 		TESTS_ENVIRONMENT="$$(VALGRIND_TESTS_ENVIRONMENT)" \
 		LOG_COMPILER="$$(VALGRIND_LOG_COMPILER)" \
 		LOG_FLAGS="$$(valgrind_$(1)_flags)" \
 		TEST_SUITE_LOG=test-suite-$(1).log
+endif
 else ifeq ($$(VALGRIND_ENABLED),yes)
 	@echo "Need to reconfigure with --enable-valgrind-$(1)"
 else
@@ -715,7 +757,7 @@ AS_VAR_COPY([$1], [pkg_cv_][$1])
 AS_VAR_IF([$1], [""], [$5], [$4])dnl
 ])dnl PKG_CHECK_VAR
 
-# Copyright (C) 2002-2014 Free Software Foundation, Inc.
+# Copyright (C) 2002-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -730,7 +772,7 @@ AC_DEFUN([AM_AUTOMAKE_VERSION],
 [am__api_version='1.15'
 dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
 dnl require some minimum version.  Point them to the right macro.
-m4_if([$1], [1.15], [],
+m4_if([$1], [1.15.1], [],
       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
 ])
 
@@ -746,12 +788,12 @@ m4_define([_AM_AUTOCONF_VERSION], [])
 # Call AM_AUTOMAKE_VERSION and AM_AUTOMAKE_VERSION so they can be traced.
 # This function is AC_REQUIREd by AM_INIT_AUTOMAKE.
 AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
-[AM_AUTOMAKE_VERSION([1.15])dnl
+[AM_AUTOMAKE_VERSION([1.15.1])dnl
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
 
-# Copyright (C) 2011-2014 Free Software Foundation, Inc.
+# Copyright (C) 2011-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -813,7 +855,7 @@ AC_SUBST([AR])dnl
 
 # AM_AUX_DIR_EXPAND                                         -*- Autoconf -*-
 
-# Copyright (C) 2001-2014 Free Software Foundation, Inc.
+# Copyright (C) 2001-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -865,7 +907,7 @@ am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 # AM_CONDITIONAL                                            -*- Autoconf -*-
 
-# Copyright (C) 1997-2014 Free Software Foundation, Inc.
+# Copyright (C) 1997-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -896,7 +938,7 @@ AC_CONFIG_COMMANDS_PRE(
 Usually this means the macro was only invoked conditionally.]])
 fi])])
 
-# Copyright (C) 1999-2014 Free Software Foundation, Inc.
+# Copyright (C) 1999-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1087,7 +1129,7 @@ _AM_SUBST_NOTMAKE([am__nodep])dnl
 
 # Generate code to set up dependency tracking.              -*- Autoconf -*-
 
-# Copyright (C) 1999-2014 Free Software Foundation, Inc.
+# Copyright (C) 1999-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1163,7 +1205,7 @@ AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS],
 
 # Do all the work for Automake.                             -*- Autoconf -*-
 
-# Copyright (C) 1996-2014 Free Software Foundation, Inc.
+# Copyright (C) 1996-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1360,7 +1402,7 @@ for _am_header in $config_headers :; do
 done
 echo "timestamp for $_am_arg" >`AS_DIRNAME(["$_am_arg"])`/stamp-h[]$_am_stamp_count])
 
-# Copyright (C) 2001-2014 Free Software Foundation, Inc.
+# Copyright (C) 2001-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1381,7 +1423,7 @@ if test x"${install_sh+set}" != xset; then
 fi
 AC_SUBST([install_sh])])
 
-# Copyright (C) 2003-2014 Free Software Foundation, Inc.
+# Copyright (C) 2003-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1403,7 +1445,7 @@ AC_SUBST([am__leading_dot])])
 # Add --enable-maintainer-mode option to configure.         -*- Autoconf -*-
 # From Jim Meyering
 
-# Copyright (C) 1996-2014 Free Software Foundation, Inc.
+# Copyright (C) 1996-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1438,7 +1480,7 @@ AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
 
 # Check to see how 'make' treats includes.	            -*- Autoconf -*-
 
-# Copyright (C) 2001-2014 Free Software Foundation, Inc.
+# Copyright (C) 2001-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1488,7 +1530,7 @@ rm -f confinc confmf
 
 # Fake the existence of programs that GNU maintainers use.  -*- Autoconf -*-
 
-# Copyright (C) 1997-2014 Free Software Foundation, Inc.
+# Copyright (C) 1997-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1527,7 +1569,7 @@ fi
 
 # Helper functions for option handling.                     -*- Autoconf -*-
 
-# Copyright (C) 2001-2014 Free Software Foundation, Inc.
+# Copyright (C) 2001-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1556,7 +1598,7 @@ AC_DEFUN([_AM_SET_OPTIONS],
 AC_DEFUN([_AM_IF_OPTION],
 [m4_ifset(_AM_MANGLE_OPTION([$1]), [$2], [$3])])
 
-# Copyright (C) 1999-2014 Free Software Foundation, Inc.
+# Copyright (C) 1999-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1603,7 +1645,7 @@ AC_LANG_POP([C])])
 # For backward compatibility.
 AC_DEFUN_ONCE([AM_PROG_CC_C_O], [AC_REQUIRE([AC_PROG_CC])])
 
-# Copyright (C) 2001-2014 Free Software Foundation, Inc.
+# Copyright (C) 2001-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1622,7 +1664,7 @@ AC_DEFUN([AM_RUN_LOG],
 
 # Check to make sure that the build environment is sane.    -*- Autoconf -*-
 
-# Copyright (C) 1996-2014 Free Software Foundation, Inc.
+# Copyright (C) 1996-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1703,7 +1745,7 @@ AC_CONFIG_COMMANDS_PRE(
 rm -f conftest.file
 ])
 
-# Copyright (C) 2009-2014 Free Software Foundation, Inc.
+# Copyright (C) 2009-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1763,7 +1805,7 @@ AC_SUBST([AM_BACKSLASH])dnl
 _AM_SUBST_NOTMAKE([AM_BACKSLASH])dnl
 ])
 
-# Copyright (C) 2001-2014 Free Software Foundation, Inc.
+# Copyright (C) 2001-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1791,7 +1833,7 @@ fi
 INSTALL_STRIP_PROGRAM="\$(install_sh) -c -s"
 AC_SUBST([INSTALL_STRIP_PROGRAM])])
 
-# Copyright (C) 2006-2014 Free Software Foundation, Inc.
+# Copyright (C) 2006-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1810,7 +1852,7 @@ AC_DEFUN([AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE($@)])
 
 # Check how to create a tarball.                            -*- Autoconf -*-
 
-# Copyright (C) 2004-2014 Free Software Foundation, Inc.
+# Copyright (C) 2004-2017 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -1942,7 +1984,7 @@ AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
 m4_include([Macros/ax_cxx_compile_stdcxx.m4])
-m4_include([Macros/ax_cxx_compile_stdcxx_14.m4])
+m4_include([Macros/ax_cxx_compile_stdcxx_17.m4])
 m4_include([Macros/ax_prog_bisoncpp.m4])
 m4_include([Macros/ax_prog_flexcpp.m4])
 m4_include([Macros/ax_tls.m4])
